@@ -1,0 +1,86 @@
+﻿<metro:MetroWindow x:Class="FrostPlay.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FrostPlay"
+        mc:Ignorable="d"
+        Title="FrostPlay" Width="800" Height="500" MinWidth="800" MinHeight="500" ResizeMode="CanResize"
+        
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1"
+        
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontSize="15"
+        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"   
+        WindowStartupLocation="CenterScreen" Closed="MetroWindow_Closed">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Column="0">
+            <DockPanel DockPanel.Dock="Bottom" Margin="20" >
+                <MediaElement Name="mediaElement" Visibility="Hidden" LoadedBehavior="Manual" Volume="{Binding ElementName=volumeSlider, Path=Value}" MediaOpened="mediaElement_MediaOpened" MediaEnded="mediaElement_MediaEnded" Height="0" Width="0"/>
+                <Button Name="playBtn" Margin="10,0" Style="{StaticResource MaterialDesignFloatingActionButton}" FontSize="20" Click="playBtn_Click">▶</Button>
+                <Button Name="stopBtn" Margin="10,0" Click="stopBtn_Click" Width="17" Height="17"></Button>
+                <Button Name="BackBtn" Margin="10,0" Width="20" Height="20" BorderBrush="{x:Null}" Click="BackBtn_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="image/Back_btn.png"/>
+                    </Button.Background>
+                </Button>
+                <Button Name="ForwardBtn" Margin="10,0" Width="20" Height="20" BorderBrush="{x:Null}" Click="ForwardBtn_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="image/Forwad_btn.png"/>
+                    </Button.Background>
+                </Button>
+                <Slider Name="volumeSlider" Margin="10,0" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="0.3" SmallChange="0.05" LargeChange="0.05"/>
+            </DockPanel>
+            <Slider DockPanel.Dock="Bottom" Name="sliderPosition" Visibility="Hidden" Margin="85,0" VerticalAlignment="Center" Minimum="0" Maximum="100" PreviewMouseDown="sliderPosition_PreviewMouseDown"  PreviewMouseUp="sliderPosition_PreviewMouseUp" ValueChanged="sliderPosition_ValueChanged"></Slider>
+            <Label DockPanel.Dock="Bottom" Name="timeLabel" VerticalAlignment="Center" Visibility="Hidden" HorizontalAlignment="Center">/</Label>
+            <Label DockPanel.Dock="Top" Name="artistAndTitleLabel" Visibility="Hidden" Margin="0,20,0,0" HorizontalAlignment="Center"></Label>
+            <Label DockPanel.Dock="Top" Name="albumLabel" Margin="0,0,0,10" Visibility="Hidden" HorizontalAlignment="Center"></Label>
+            <Image DockPanel.Dock="Top" Name="coverImage" Margin="57,0" HorizontalAlignment="Center" Source="image/DefaultCover.png" ></Image>
+        </DockPanel>
+        <DockPanel Grid.Column="1">
+            <WrapPanel HorizontalAlignment="Right" DockPanel.Dock="Bottom">
+                <Label Name="orderStatusLabel" Margin="0,0,20,35" VerticalAlignment="Center">Order</Label>
+                <Button Margin="0,0,20,35" Height="28" Width="28" BorderBrush="{x:Null}" Click="order_btn">
+                    <Button.Background>
+                        <ImageBrush ImageSource="image/order_btn.png"/>
+                    </Button.Background>
+                </Button>
+                <Button Margin="0,0,20,35" Height="28" Width="28" BorderBrush="{x:Null}" Click="loop_btn">
+                    <Button.Background>
+                        <ImageBrush ImageSource="image/loop_btn.png"/>
+                    </Button.Background>
+                </Button>
+                <Button Margin="0,0,20,35" Height="28" Width="28" BorderBrush="{x:Null}" Click="random_btn">
+                    <Button.Background>
+                        <ImageBrush ImageSource="image/random_btn.png"/>
+                    </Button.Background>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Margin="0,0,20,35" Height="28" Width="28" Click="addItems_Click" >+</Button>
+                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Margin="0,0,40,35" Height="28" Width="28" Click="removeItems_Click">-</Button>
+            </WrapPanel>
+            <ListBox Name="playListBox" ItemsSource="{Binding playList}" DisplayMemberPath="displayString" VirtualizingPanel.VirtualizationMode="Recycling" SelectionMode="Extended" MouseDoubleClick="playListBox_MouseDoubleClick" Margin="20,30,20,10">
+                <ListBox.ContextMenu>
+                    <ContextMenu FontSize="14">
+                        <MenuItem Header="Sort By Title" Click="MenuItem_Click_SortByTitle"></MenuItem>
+                        <MenuItem Header="Sort By Artist" Click="MenuItem_Click_SortByArtist"></MenuItem>
+                        <MenuItem Header="Sort By Album" Click="MenuItem_Click_SortByAlbum"></MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+            <!--<DataGrid Name="playListBox" ItemsSource="{Binding playList}" MouseDoubleClick="playListBox_MouseDoubleClick" Margin="20,30,20,10"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Artist" Binding="{Binding artist}"/>
+                    <DataGridTextColumn Header="Title" Binding="{Binding title}"/>
+                </DataGrid.Columns>
+            </DataGrid>-->
+        </DockPanel>
+    </Grid>
+</metro:MetroWindow>
