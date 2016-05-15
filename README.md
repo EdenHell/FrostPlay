@@ -4,6 +4,7 @@ This is a simple and beautiful music player, Use these UI toolkit development:
 
 * [Material Design In XAML Toolkit](http://materialdesigninxaml.net/)
 * [MahApps.metro](http://mahapps.com/)
+* [CSCore](https://github.com/filoe/cscore)
 
 and a Library for reading and writing metadata in media files:
 
