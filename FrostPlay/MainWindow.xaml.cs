@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using CSCore.Codecs;
+using CSCore.SoundOut;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +23,7 @@ namespace FrostPlay
 
     public sealed partial class MainWindow
     {
+        AudioEngine audioEngine = new AudioEngine();
         public BindingList<Music> playList { get; set; } = new BindingList<Music>();
         System.Windows.Media.ImageSource defaultCover { get; set; } = null;
         DispatcherTimer dispatcherTimer { get; set; } = new DispatcherTimer();
@@ -33,6 +36,8 @@ namespace FrostPlay
         public MainWindow()
         {
             InitializeComponent();
+            audioEngine.AudioOpened += AudioEngine_AudioOpened;
+            audioEngine.AudioEnded += AudioEngine_AudioEnded;
             dispatcherTimer.Interval = new System.TimeSpan(10);
             dispatcherTimer.Tick += new EventHandler(Progress_timer_Tick);
             defaultCover = coverImage.Source;
@@ -63,7 +68,7 @@ namespace FrostPlay
             int startIndex = playList.Count;
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Multiselect = true;
-            ofd.Filter = "所有支持格式(*.mp3;*.m4a;*.aac;*.flac;*.wav)|*.mp3;*.m4a;*.aac;*.flac;*.wav|有损压缩音频(*.mp3;*.m4a;*.aac)|*.mp3;*.m4a;*.aac|无损压缩音频(*.flac)|*.flac|无损未压缩音频(*.wav)|*.wav";
+            ofd.Filter = CodecFactory.SupportedFilesFilterEn;
             if (ofd.ShowDialog() == true)
             {
                 foreach (var item in ofd.FileNames)
@@ -100,8 +105,8 @@ namespace FrostPlay
                     if ((string)playBtn.Content == "▶")
                         flag = false;
                     Music nextMusic = (nextNum == playList.Count) ? playList[0] : playList[nextNum];
-                    mediaElement.Source = nextMusic.path;
                     nowPlayingMusic = nextMusic;
+                    audioEngine.Source = nextMusic.path;
                     if (flag)
                         play();
                 }
@@ -113,8 +118,8 @@ namespace FrostPlay
             }
             else
             {
-                mediaElement.Source = null;
                 nowPlayingMusic = null;
+                audioEngine.Source = null;
                 playBtn.Content = "▶";
                 sliderPosition.Visibility = Visibility.Hidden;
                 timeLabel.Visibility = Visibility.Hidden;
@@ -212,8 +217,8 @@ namespace FrostPlay
 
         private void sliderPosition_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (!mediaElement.HasAudio) return;
-            mediaElement.Position = TimeSpan.FromSeconds(sliderPosition.Value / sliderPosition.Maximum * nowPlayingMusic.duration.TotalSeconds);
+            if (nowPlayingMusic == null) return;
+            audioEngine.Position = TimeSpan.FromSeconds(sliderPosition.Value / sliderPosition.Maximum * nowPlayingMusic.duration.TotalSeconds);
             dispatcherTimer.IsEnabled = true;
         }
 
@@ -227,18 +232,23 @@ namespace FrostPlay
             timeLabel.Content = currentMinutes.ToString() + ":" + currentSeconds.ToString() + "/" + totalMinutes.ToString() + ":" + totalSeconds.ToString();
         }
 
+        private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            audioEngine.Volume = (float)volumeSlider.Value;
+        }
+
         private void playListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             string originalSourceTypeString = e.OriginalSource.GetType().ToString();
             if (e.ChangedButton == System.Windows.Input.MouseButton.Right || originalSourceTypeString != "System.Windows.Controls.Grid" && originalSourceTypeString != "System.Windows.Controls.TextBlock")
                 return;
             var selectedItem = (Music)playListBox.SelectedItem;
-            mediaElement.Source = selectedItem.path;
             nowPlayingMusic = selectedItem;
+            audioEngine.Source = selectedItem.path;
             play();
         }
 
-        private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
+        private void AudioEngine_AudioOpened(object sender, EventArgs e)
         {
             dispatcherTimer.IsEnabled = true;
             playListBox.ScrollIntoView(nowPlayingMusic);
@@ -270,28 +280,32 @@ namespace FrostPlay
             timeLabel.Visibility = Visibility.Visible;
         }
 
-        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        private void AudioEngine_AudioEnded(object sender, PlaybackStoppedEventArgs e)
         {
-            playNextSong(playOrder);
+            if (nowPlayingMusic != null)
+                playNextSong(playOrder);
         }
 
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
             writePlayList();
             writeSettings();
+            nowPlayingMusic = null;
+            audioEngine.Source = null;
+            audioEngine.Dispose();
         }
 
         private void Progress_timer_Tick(object sender, EventArgs e)
         {
             if (nowPlayingMusic == null || nowPlayingMusic.duration.TotalSeconds == 0) return;
-            sliderPosition.Value = mediaElement.Position.TotalSeconds / nowPlayingMusic.duration.TotalSeconds * sliderPosition.Maximum;
+            sliderPosition.Value = audioEngine.Position.TotalSeconds / nowPlayingMusic.duration.TotalSeconds * sliderPosition.Maximum;
         }
 
         private void play()
         {
             if (nowPlayingMusic != null)
             {
-                mediaElement.Play();
+                audioEngine.Play();
                 playBtn.Content = "| |";
             }
         }
@@ -300,14 +314,14 @@ namespace FrostPlay
         {
             if ((string)playBtn.Content == "| |")
             {
-                mediaElement.Pause();
+                audioEngine.Pause();
                 playBtn.Content = "▶";
             }
         }
 
         private void stop()
         {
-            mediaElement.Stop();
+            audioEngine.Stop();
             playBtn.Content = "▶";
         }
 
@@ -354,8 +368,8 @@ namespace FrostPlay
                     break;
             }
             stop();
-            mediaElement.Source = nextSong.path;
             nowPlayingMusic = nextSong;
+            audioEngine.Source = nextSong.path;
             play();
         }
 
@@ -398,8 +412,8 @@ namespace FrostPlay
             Music music = findMusic(settings.lastMusicUri);
             if (music != null)
             {
-                mediaElement.Source = music.path;
                 nowPlayingMusic = music;
+                audioEngine.Source = music.path;
                 playListBox.ScrollIntoView(music);
                 playListBox.SelectedItem = music;
             }

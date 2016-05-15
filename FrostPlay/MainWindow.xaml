@@ -23,7 +23,6 @@
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Column="0">
             <DockPanel DockPanel.Dock="Bottom" Margin="20" >
-                <MediaElement Name="mediaElement" Visibility="Hidden" LoadedBehavior="Manual" Volume="{Binding ElementName=volumeSlider, Path=Value}" MediaOpened="mediaElement_MediaOpened" MediaEnded="mediaElement_MediaEnded" Height="0" Width="0"/>
                 <Button Name="playBtn" Margin="10,0" Style="{StaticResource MaterialDesignFloatingActionButton}" FontSize="20" Click="playBtn_Click">▶</Button>
                 <Button Name="stopBtn" Margin="10,0" Click="stopBtn_Click" Width="17" Height="17"></Button>
                 <Button Name="BackBtn" Margin="10,0" Width="20" Height="20" BorderBrush="{x:Null}" Click="BackBtn_Click">
@@ -36,7 +35,7 @@
                         <ImageBrush ImageSource="image/Forwad_btn.png"/>
                     </Button.Background>
                 </Button>
-                <Slider Name="volumeSlider" Margin="10,0" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="0.3" SmallChange="0.05" LargeChange="0.05"/>
+                <Slider Name="volumeSlider" Margin="10,0" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="0.3" SmallChange="0.05" LargeChange="0.05" ValueChanged="volumeSlider_ValueChanged"/>
             </DockPanel>
             <Slider DockPanel.Dock="Bottom" Name="sliderPosition" Visibility="Hidden" Margin="85,0" VerticalAlignment="Center" Minimum="0" Maximum="100" PreviewMouseDown="sliderPosition_PreviewMouseDown"  PreviewMouseUp="sliderPosition_PreviewMouseUp" ValueChanged="sliderPosition_ValueChanged"></Slider>
             <Label DockPanel.Dock="Bottom" Name="timeLabel" VerticalAlignment="Center" Visibility="Hidden" HorizontalAlignment="Center">/</Label>
