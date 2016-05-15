@@ -44,17 +44,39 @@ namespace FrostPlay
 
         public Music(Uri path)
         {
-            var file = TagLib.File.Create(path.LocalPath);
-            title = file.Tag.Title;
-            artist = file.Tag.Performers[0];
-            album = file.Tag.Album;
-            duration = file.Properties.Duration;
-            this.path = path;
+            try
+            {
+                var file = TagLib.File.Create(path.LocalPath);
+                title = file.Tag.Title;
+                if (file.Tag.Performers.Length != 0)
+                    artist = file.Tag.Performers[0];
+                else
+                    artist = null;
+                album = file.Tag.Album;
+                duration = file.Properties.Duration;
+                this.path = path;
+            }
+            catch
+            {
+                title = null;
+                artist = null;
+                album = null;
+                duration = TimeSpan.Zero;
+                this.path = path;
+            }
         }
 
         public BitmapImage getPicture()
         {
-            var file = TagLib.File.Create(path.LocalPath);
+            TagLib.File file;
+            try
+            {
+                file = TagLib.File.Create(path.LocalPath);
+            }
+            catch
+            {
+                return null;
+            }
             if (file.Tag.Pictures.Length > 0)
             {
                 var bin = (byte[])(file.Tag.Pictures[0].Data.Data);
