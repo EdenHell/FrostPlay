@@ -251,6 +251,7 @@ namespace FrostPlay
         private void AudioEngine_AudioOpened(object sender, EventArgs e)
         {
             dispatcherTimer.IsEnabled = true;
+            audioEngine.Volume = (float)volumeSlider.Value;
             playListBox.ScrollIntoView(nowPlayingMusic);
             playListBox.SelectedItem = nowPlayingMusic;
             artistAndTitleLabel.Content = nowPlayingMusic.artist + "-" + nowPlayingMusic.title;
