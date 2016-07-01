@@ -1,6 +1,9 @@
 # ![Alt text](overview/Icon.png "FrostPlay") FrostPlay
 
-This is a simple and beautiful music player, Use these UI toolkit development:
+FrostPlay is a simple and beautiful music player
+
+Project Use these UI toolkit development:
+
 * [Material Design In XAML Toolkit](http://materialdesigninxaml.net/)
 * [MahApps.metro](http://mahapps.com/)
 
