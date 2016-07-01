@@ -2,7 +2,7 @@
 
 FrostPlay is a simple and beautiful music player
 
-Project Use these UI toolkit development:
+Project use these UI toolkit development:
 
 * [Material Design In XAML Toolkit](http://materialdesigninxaml.net/)
 * [MahApps.metro](http://mahapps.com/)
