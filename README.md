@@ -15,6 +15,6 @@ and a Library for reading and writing metadata in media files:
 
 ### Screenshot
 
-![]("overview/Screenshot 1.png")
+![Screenshot1]("overview/Screenshot 1.png")
 
-![]("overview/Screenshot 2.png")
+![Screenshot1]("overview/Screenshot 2.png")
